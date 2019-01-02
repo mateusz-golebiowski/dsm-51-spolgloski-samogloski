@@ -3,33 +3,61 @@ TEXT    EQU 10H
     ORG 100H
     
 START:
-    MOV R0,#'A'
     MOV DPTR, #TEXT
-    MOV A, R0
+    MOV A, #0
     MOVX @DPTR, A
+    MOV R1,#0
+
+    MOV R0, #'A'
 LOOP:
     LCALL   LCD_CLR
     MOV DPTR, #TEXT
     MOVX A,@DPTR
+    LCALL   WRITE_TEXT
+    MOV A, R0
     LCALL   WRITE_DATA
     LCALL   WAIT_KEY
 
     CJNE    A, #0AH,CHECK_0B
-    MOV DPTR, #TEXT
-    MOVX A,@DPTR
+    CJNE    R0, #41H,PREV_LETTER
+    MOV R0,#5AH
+    SJMP    LOOP
+PREV_LETTER:
+    MOV A, R0
     SUBB A,#1
-    MOVX @DPTR,A
+    MOV R0, A
     SJMP    LOOP
 
 CHECK_0B:
     CJNE    A, #0BH,CHECK_0F
-    MOV DPTR, #TEXT
-    MOVX A,@DPTR
+    CJNE    R0, #5AH,NEXT_LETTER
+    MOV R0,#41H
+    SJMP    LOOP
+NEXT_LETTER:
+    MOV A, R0
     ADD A,#1
-    MOVX @DPTR,A
+    MOV R0, A
     SJMP    LOOP
     
 CHECK_0F:
     CJNE    A, #0FH,LOOP
+    MOV DPTR, #TEXT
+    MOV A, R1
+LOOP2:
+    JZ ADD_LETTER
+    INC DPTR
+    DEC A
+    SJMP LOOP2
+
+ADD_LETTER:
+    MOVX A, @DPTR
+    MOV A, R0
+    MOVX @DPTR,A
+    INC DPTR
+    MOV A, #0
+    MOVX @DPTR, A
+    INC R1
+    MOV R0, #'A'
+
     
     SJMP    LOOP
