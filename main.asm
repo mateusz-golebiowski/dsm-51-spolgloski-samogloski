@@ -1,30 +1,35 @@
+TEXT    EQU 10H
     LJMP    START
     ORG 100H
     
 START:
     MOV R0,#'A'
+    MOV DPTR, #TEXT
+    MOV A, R0
+    MOVX @DPTR, A
 LOOP:
     LCALL   LCD_CLR
-    
-    MOV A,R0
+    MOV DPTR, #TEXT
+    MOVX A,@DPTR
     LCALL   WRITE_DATA
     LCALL   WAIT_KEY
 
-    CJNE    A, #0BH,CHECK_0B
-    MOV A,R0
-    ADD A,#1
-    MOV R0,A
+    CJNE    A, #0AH,CHECK_0B
+    MOV DPTR, #TEXT
+    MOVX A,@DPTR
+    SUBB A,#1
+    MOVX @DPTR,A
     SJMP    LOOP
 
 CHECK_0B:
-    CJNE    A, #0AH,CHECK_0B
-    MOV A,R0
-    SUBB A,#1
-    MOV R0,A
+    CJNE    A, #0BH,CHECK_0F
+    MOV DPTR, #TEXT
+    MOVX A,@DPTR
+    ADD A,#1
+    MOVX @DPTR,A
     SJMP    LOOP
-
-
-
-
-
-
+    
+CHECK_0F:
+    CJNE    A, #0FH,LOOP
+    
+    SJMP    LOOP
