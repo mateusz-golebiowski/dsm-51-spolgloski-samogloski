@@ -1,4 +1,7 @@
 TEXT    EQU 10H
+LED     EQU P1.7
+BUZZER  EQU P1.5
+
     LJMP    START
     ORG 100H
     
@@ -40,9 +43,56 @@ NEXT_LETTER:
     SJMP    LOOP
     
 CHECK_0F:
-    CJNE    A, #0FH,LOOP
+    CJNE    A, #0FH,CHECK_OE
     MOV DPTR, #TEXT
     MOV A, R1
+    SJMP LOOP2
+
+CHECK_OE:
+    CJNE    A, #0EH,LOOP
+    MOV DPTR, #TEXT
+    
+    LCALL   LCD_CLR
+    
+
+LOOP3:
+    MOVX A,@DPTR
+    JZ  START
+   
+    
+    LCALL   WRITE_DATA
+    MOV A,#10 ;czekaj czas 10*100ms=1s
+	LCALL	DELAY_100MS ;podprogram z EPROMu
+    MOVX A, @DPTR
+CHECK_A:
+    CJNE    A,#41H, CHECK_E
+    SJMP SPEAKER
+
+CHECK_E:
+    CJNE    A,#45H, CHECK_I
+    SJMP SPEAKER
+
+CHECK_I:
+    CJNE    A,#49H, CHECK_O
+    SJMP SPEAKER
+
+CHECK_O:
+    CJNE    A,#4FH, CHECK_U
+    SJMP SPEAKER
+
+CHECK_U:
+    CJNE    A,#55H, CHECK_Y
+    SJMP SPEAKER
+
+CHECK_Y:
+    CJNE    A,#59H, DIODA
+    SJMP SPEAKER
+
+
+CONT:
+    INC DPTR
+    SJMP LOOP3
+
 LOOP2:
     JZ ADD_LETTER
     INC DPTR
@@ -58,6 +108,19 @@ ADD_LETTER:
     MOVX @DPTR, A
     INC R1
     MOV R0, #'A'
+    LJMP    LOOP
 
-    
-    SJMP    LOOP
+
+;;;
+SPEAKER:
+    CLR BUZZER
+    MOV A,#10 ;czekaj czas 10*100ms=1s
+	LCALL	DELAY_100MS ;podprogram z EPROMu
+    SETB BUZZER
+    SJMP    CONT
+DIODA:
+    CLR LED
+    MOV A,#10 ;czekaj czas 10*100ms=1s
+	LCALL	DELAY_100MS ;podprogram z EPROMu
+    SETB LED
+    SJMP    CONT
