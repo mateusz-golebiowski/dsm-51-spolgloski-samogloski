@@ -13,6 +13,10 @@ START:
 
     MOV R0, #'A'
 LOOP:
+    MOV A, R1
+    CJNE    A, #32,NEXT
+    SJMP END
+NEXT:
     LCALL   LCD_CLR
     MOV DPTR, #TEXT
     MOVX A,@DPTR
@@ -50,6 +54,7 @@ CHECK_0F:
 
 CHECK_OE:
     CJNE    A, #0EH,LOOP
+END:
     MOV DPTR, #TEXT
     
     LCALL   LCD_CLR
