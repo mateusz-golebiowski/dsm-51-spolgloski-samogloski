@@ -13,6 +13,10 @@ START:
 
     MOV R0, #'A'
 LOOP:
+    MOV A, R1
+    CJNE    A, #32,NEXT
+    SJMP END
+NEXT:
     LCALL   LCD_CLR
     MOV DPTR, #TEXT
     MOVX A,@DPTR
@@ -50,6 +54,7 @@ CHECK_0F:
 
 CHECK_OE:
     CJNE    A, #0EH,LOOP
+END:
     MOV DPTR, #TEXT
     
     LCALL   LCD_CLR
@@ -124,3 +129,18 @@ DIODA:
 	LCALL	DELAY_100MS ;podprogram z EPROMu
     SETB LED
     SJMP    CONT
+
+
+;LITERA:     
+ ;   DB   0 , 0 , 14 , 1 , 15 , 17 , 15 , 4            ;ą
+ ;   DB   2 , 4 , 14 , 16 , 16 , 17 , 14 , 0           ;ć
+ ;   DB   0 , 32 , 14 , 17 , 31 , 16 , 14 , 4          ;ę
+ ;   DB   12 , 4 , 6 , 12 , 4 , 4 , 14 , 0             ;ł
+ ;   DB   2 , 4 , 22 , 25 , 17 , 17 , 17 , 0           ;ń
+  ;  DB   2 , 4 , 14 , 17 , 17 , 17 , 14 , 0           ;ó
+ ;   DB   2 , 4 , 15 , 16 , 14 , 1 , 30 , 0            ;ś
+ ;   DB   2 , 4 , 31 , 2 , 4 , 8 , 31 , 0              ;ź
+;    DB   2 , 4 , 31 , 2 , 4 , 8 , 31 , 0              ;ź
+
+
+;TEXT:      DB   'AĄBCĆDEĘFGHIJKLŁMNŃOÓPRSŚTUWYZŹŻ',0
