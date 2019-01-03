@@ -1,5 +1,6 @@
 TEXT    EQU 10H
 LED     EQU P1.7
+BUZZER  EQU P1.5
 
     LJMP    START
     ORG 100H
@@ -62,8 +63,8 @@ LOOP3:
     LCALL   WRITE_DATA
     MOV A,#10 ;czekaj czas 10*100ms=1s
 	LCALL	DELAY_100MS ;podprogram z EPROMu
-    
-
+    MOVX A, @DPTR
+CHECK_A:
     CJNE    A,#41H, CHECK_E
     SJMP SPEAKER
 
@@ -112,8 +113,14 @@ ADD_LETTER:
 
 ;;;
 SPEAKER:
-  
+    CLR BUZZER
+    MOV A,#10 ;czekaj czas 10*100ms=1s
+	LCALL	DELAY_100MS ;podprogram z EPROMu
+    SETB BUZZER
     SJMP    CONT
 DIODA:
-    
+    CLR LED
+    MOV A,#10 ;czekaj czas 10*100ms=1s
+	LCALL	DELAY_100MS ;podprogram z EPROMu
+    SETB LED
     SJMP    CONT
