@@ -47,11 +47,27 @@ NEXT_LETTER:
     SJMP    LOOP
     
 CHECK_0F:
-    CJNE    A, #0FH,CHECK_OE ;jeżeli wciesnieto F
+    CJNE    A, #0FH,CHECK_0D ;jeżeli wciesnieto F
     MOV DPTR, #TEXT 
     MOV A, R1   ;wczytaj dlugosc tekstu
     SJMP LOOP2
-
+CHECK_0D:
+    CJNE    A, #0DH,CHECK_OE ;jeżeli wciesnieto D
+    MOV A, R1   
+    JZ LOOP ;jezeli brak tekstu skocz do loop
+    MOV DPTR, #TEXT
+    DEC R1
+    MOV A, R1
+CHECK_IF_END:
+    JZ  DELETE ;jezeli ostatnia litera skocz do delete
+    INC DPTR    ;zwieksz  wskaznik
+    DEC A   ;zmniejsz A
+    SJMP CHECK_IF_END
+DELETE:
+    MOVX A, @DPTR
+    MOV A, #0   ;ustaw zero
+    MOVX @DPTR,A
+    SJMP LOOP
 CHECK_OE:
     CJNE    A, #0EH,LOOP    ;jeżeli wcisnieto E
 END:
